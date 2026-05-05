@@ -1,203 +1,68 @@
-# 📘 CertifyMe — Full Stack Intern Assessment
+# Qatar Foundation — Admin Portal Backend
 
----
+Flask backend for the Qatar Foundation Admin Portal. Supports admin auth and opportunity management.
 
-## 🚀 Getting Started
+## Setup
 
-1. **Clone the provided repository**
-   ```bash
-   git clone https://github.com/Neerajvs32/Test1.git
-   ```
+```bash
+# 1. Clone and enter project
+git clone https://github.com/Neerajvs32/Test1
+cd Test1
 
-2. **Create your own GitHub repository**
-   - Push the cloned project to your own GitHub account.
-   - Share your repository link after completing the task.
+# 2. Copy backend files into the repo root (or run from project folder)
+# Make sure qatar_admin/ structure is inside the repo
 
-3. **Development Requirement**
-   - Both Frontend and Backend must run together.
-   - The UI must remain exactly the same.
-   - ❌ Do NOT modify frontend design or components.
-   - ✅ Build the backend required for the existing UI functionality.
+# 3. Create a virtual environment
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
 
----
+# 4. Install dependencies
+pip install -r requirements.txt
 
-## 🏢 Project Overview
+# 5. Run the server
+python app.py
+```
 
-This project is part of the **CertifyMe Full Stack Intern Assessment**. The repository already contains a complete Admin UI. Your responsibility is to **build the backend and connect it with the existing frontend**.
+Then open http://localhost:5000
 
-### Objectives
-- Build backend APIs using Flask
-- Connect frontend with backend
-- Store and retrieve data from database
-- Make the application fully functional
+## Project Structure
 
-### 🔗 Original Repository
-[https://github.com/Neerajvs32/Test1](https://github.com/Neerajvs32/Test1)
+```
+qatar_admin/
+├── app.py                  # Flask app + all API routes
+├── models.py               # SQLAlchemy DB models
+├── requirements.txt
+├── templates/
+│   ├── admin.html          # Original UI (unchanged)
+│   ├── reset_form.html     # Password reset form
+│   ├── reset_error.html    # Expired/invalid token page
+│   └── reset_success.html  # Success confirmation page
+└── static/
+    ├── admin.css           # Original styles (unchanged)
+    └── admin.js            # Wired to Flask APIs
+```
 
----
+## API Endpoints
 
-## ⚙️ Tech Stack
+| Method | Endpoint                          | Description                    |
+|--------|-----------------------------------|--------------------------------|
+| POST   | /api/signup                       | Create admin account           |
+| POST   | /api/login                        | Login + set session            |
+| POST   | /api/logout                       | Clear session                  |
+| GET    | /api/me                           | Get current admin info         |
+| POST   | /api/forgot-password              | Request password reset link    |
+| GET    | /reset-password/<token>           | Show reset form                |
+| POST   | /reset-password/<token>           | Submit new password            |
+| GET    | /api/opportunities                | List admin's opportunities     |
+| POST   | /api/opportunities                | Create new opportunity         |
+| PUT    | /api/opportunities/<id>           | Update opportunity             |
+| DELETE | /api/opportunities/<id>           | Delete opportunity             |
 
-| Layer | Technology |
-|---|---|
-| Backend | Python |
-| Framework | Flask |
-| Database | SQLite / MySQL / PostgreSQL |
-| Frontend | Pre-built Admin UI |
+## Security
 
----
-
-## 🧩 Features & User Stories
-
----
-
-### ✅ Task 1 — Authentication *(Day 1)*
-
----
-
-#### US-1.1 — Admin Sign Up
-
-**Required Fields**
-- Full Name
-- Email
-- Password
-- Confirm Password
-
-**Validations**
-- All fields mandatory
-- Email must be valid
-- Password minimum 8 characters
-- Passwords must match
-- Email must be unique
-
-**Expected Result**
-- Save admin account
-- Redirect to Login page
-
----
-
-#### US-1.2 — Admin Login
-
-**Fields**
-- Email
-- Password
-- Remember Me checkbox
-
-**Rules**
-- Show generic error on failure:
-  ```
-  Invalid email or password
-  ```
-
-**Expected Result**
-- Redirect to dashboard
-- Load opportunities created by the admin
-
-**Session Handling**
-
-| Condition | Behaviour |
-|---|---|
-| Remember Me checked | Long-lived session |
-| Remember Me unchecked | Session ends when browser closes |
-
----
-
-#### US-1.3 — Forgot Password
-
-**Requirements**
-- Admin enters their email
-- Always show the same success message (regardless of whether email exists)
-
-**Behaviour**
-- Generate reset link internally
-- No email sending required
-
-**Security**
-- Reset link expires after **1 hour**
-- Expired link shows an error
-
----
-
-### ✅ Task 2 — Opportunity Management *(Day 2)*
-
-> All opportunities must be stored in the database, linked to the logged-in admin, and must never use hardcoded data.
-
----
-
-#### US-2.1 — View All Opportunities
-
-**Each opportunity card must display:**
-- Opportunity Name
-- Category
-- Duration
-- Start Date
-- Description
-
-**Rules**
-- Show only the logged-in admin's opportunities
-- Remove all demo / hardcoded cards
-- Show an empty state if no opportunities exist
-
----
-
-#### US-2.2 — Add New Opportunity
-
-**Required Fields**
-- Opportunity Name
-- Duration
-- Start Date
-- Description
-- Skills to Gain *(comma separated)*
-- Category
-- Future Opportunities
-
-**Optional Field**
-- Maximum Applicants
-
-**Category Options**
-- Technology
-- Business
-- Design
-- Marketing
-- Data Science
-- Other
-
-**Expected Result**
-- Validate all required fields
-- Save opportunity to database
-- Link opportunity to logged-in admin
-- Display immediately **without page refresh**
-
----
-
-#### US-2.3 — Opportunities Persist After Login
-
-- Opportunities must load after logout / login cycles
-- Stored only in the database — **no local storage usage**
-- Admins cannot access other admins' data
-
----
-
-#### US-2.4 — View Opportunity Details
-
-- Open a details modal
-- Show all saved fields
-- Close button available
-
----
-
-#### US-2.5 — Edit Opportunity
-
-- Edit button opens a pre-filled form
-- Apply the same validations as during creation
-- Update only the selected opportunity
-- Reflect changes instantly **without page refresh**
-
----
-
-#### US-2.6 — Delete Opportunity
-
-- Show a confirmation dialog before deletion
-- Delete permanently from the database
-- Remove from UI immediately **without page refresh**
-- Only the creator admin can delete their own opportunity
+- Passwords hashed with bcrypt (never stored plain)
+- Session cookie: HttpOnly, SameSite=Lax
+- Ownership enforced: admins can only edit/delete their own opportunities
+- Password reset tokens expire in 1 hour, logged to console
+- Generic error messages on login (never reveals which field is wrong)
+- Remember Me: 30-day session; unchecked: browser-session only
