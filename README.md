@@ -6,7 +6,7 @@ Flask backend for the Qatar Foundation Admin Portal. Supports admin authenticati
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Neerajvs32/Test1
+git clone https://github.com/Hitan547/Test1
 cd Test1
 
 # 2. Install dependencies
