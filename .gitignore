@@ -1,0 +1,6 @@
+echo "__pycache__/" > .gitignore
+echo "*.db" >> .gitignore
+echo "*.pyc" >> .gitignore
+git rm --cached __pycache__/models.cpython-310.pyc
+git rm --cached instance/qatar_admin.db
+git add .gitignore
